@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+
+import argparse
+import sys
+
+def main(args):
+    chk_device          = args.device
+    chk_msg             = {}
+    chk_msg_prefix      = 'CONFIGURED MTU'
+    chk_state           = 0
+    chk_state_strings   = [ 'OK', 'WARNING', 'CRTITCAL', 'UNKNOWN' ]
+
+    sys_file_path       = '/sys/class/net/{}/mtu'.format(chk_device)
+
+    try:
+        mtu_sys_f = open(sys_file_path, 'r')
+    except IOError:
+        print('{} UNKNOWN - {} is not readable.'.format(chk_msg_prefix, sys_file_path))
+        sys.exit(3)
+    else:
+        with mtu_sys_f:
+            metrics         = {}
+            metric          = 'mtu'
+
+            metrics[metric]  = mtu_sys_f.read().strip()
+            chk_msg[metric]  = 'Configured value is {}.'.format(metrics[metric])
+
+    if args.desired_mtu:
+        if metrics[metric] != args.desired_mtu:
+            chk_msg[metric]  = 'Configured value is {}, while the desired value is {}'.format(metrics[metric], args.desired_mtu)
+            chk_state       = 2
+        else:
+            chk_msg[metric]  = 'Configured value is {} which is what is expected.'.format(metrics[metric])
+
+    perf_data       = (' '.join("{!s}={!s}".format(k,v) for (k,v) in metrics.items()))
+    chk_msg_string  = (';'.join("{!s}".format(v) for (k, v) in chk_msg.items()))
+
+    composed_output = ' '.join((chk_msg_prefix, chk_state_strings[chk_state], '-', chk_msg_string, '|', perf_data))
+
+    print(composed_output)
+    sys.exit(chk_state)
+
+
+def parseArgs():
+    argParser = argparse.ArgumentParser(description='Returns the configured MTU.')
+    argParser.add_argument('-d', '--device', dest='device', required=True, \
+                            help='Monitored interface (examples: virbr0, eth0, ens192)')
+    argParser.add_argument('--desired-mtu', dest='desired_mtu', required=False, type=int, \
+                            help='Service check result will be critical if MTU is not equal to this value.')
+
+    return argParser.parse_args()
+
+
+if __name__ == "__main__":
+    args = parseArgs()
+    main(args)
