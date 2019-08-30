@@ -26,8 +26,10 @@ def main(args):
             chk_msg[metric]  = 'Configured value is {}.'.format(metrics[metric])
 
     if args.desired_mtu:
+        metrics['desired_mtu'] = args.desired_mtu
+
         if metrics[metric] != args.desired_mtu:
-            chk_msg[metric]  = 'Configured value is {}, while the desired value is {}'.format(metrics[metric], args.desired_mtu)
+            chk_msg[metric] = 'Configured value is {}, while the desired value is {}'.format(metrics[metric], args.desired_mtu)
             chk_state       = 2
         else:
             chk_msg[metric]  = 'Configured value is {} which is what is expected.'.format(metrics[metric])
