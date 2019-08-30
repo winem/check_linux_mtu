@@ -1,5 +1,5 @@
 # check_linux_mtu
-Nagios and Icinga2 plugin to check the MTU of an interface on a Linux host and throw and alarm if the configured MTU does not match the desired MTU.
+Nagios and Icinga2 plugin to check the MTU of an interface on a Linux host and throw and alarm if the configured MTU deviates from the desired MTU.
 
 ## Dependencies
 This plugin requires:
