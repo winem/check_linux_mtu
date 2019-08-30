@@ -22,7 +22,7 @@ def main(args):
             metrics         = {}
             metric          = 'mtu'
 
-            metrics[metric]  = mtu_sys_f.read().strip()
+            metrics[metric]  = int(mtu_sys_f.read().strip())
             chk_msg[metric]  = 'Configured value is {}.'.format(metrics[metric])
 
     if args.desired_mtu:
